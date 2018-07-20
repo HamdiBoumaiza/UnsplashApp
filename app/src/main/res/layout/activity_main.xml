@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.MainActivity">
+
+        <LinearLayout
+            android:id="@+id/matching_history_tabs_container"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:visibility="visible">
+
+            <info.hoang8f.android.segmented.SegmentedGroup
+                android:id="@+id/tabs_segmented_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="3dp"
+                android:orientation="horizontal"
+                segmentedgroup:sc_border_width="1dp"
+                segmentedgroup:sc_checked_text_color="@color/colorPrimary"
+                segmentedgroup:sc_corner_radius="5dp"
+                segmentedgroup:sc_tint_color="@color/colorWhite">
+
+
+                <RadioButton
+                    android:id="@+id/rb_tab_popular"
+                    style="@style/RadioButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/popular" />
+
+                <RadioButton
+                    android:id="@+id/rb_tab_latest"
+                    style="@style/RadioButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="@string/latest" />
+
+                <RadioButton
+                    android:id="@+id/rb_tab_oldest"
+                    style="@style/RadioButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/oldest" />
+
+            </info.hoang8f.android.segmented.SegmentedGroup>
+        </LinearLayout>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_unsplash"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:padding="10dp" />
+
+
+    </android.support.design.widget.CoordinatorLayout>
+</layout>
