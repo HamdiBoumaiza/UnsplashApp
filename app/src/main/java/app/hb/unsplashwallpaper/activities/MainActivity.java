@@ -20,6 +20,9 @@ import app.hb.unsplashwallpaper.network.ApiService;
 import app.hb.unsplashwallpaper.network.Client;
 import app.hb.unsplashwallpaper.utils.Constants;
 import app.hb.unsplashwallpaper.utils.UtilsHelper;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import timber.log.Timber;
@@ -30,6 +33,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String PER_PAGE = "30";
 
     private ActivityMainBinding mainBinding;
+
+    private CompositeDisposable mCompositeDisposable;
 
     private Context mContext;
     private ApiService mApiService;
@@ -45,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mContext = getApplicationContext();
         progressDialog = new ProgressDialog(MainActivity.this);
+        mCompositeDisposable = new CompositeDisposable();
+
         initRecycler();
         ProgressD();
         getPhotos(mContext.getString(R.string.latest), page);
@@ -94,49 +101,58 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(mContext, mContext.getString(R.string.internet_does_not_exist), Toast.LENGTH_LONG).show();
         } else {
             mApiService = Client.getInstance(getApplicationContext()).getService();
-            Call<ArrayList<PhotoModel>> call = mApiService.getPhotos(
+
+
+            mCompositeDisposable.add(mApiService.getPhotos(
                     Constants.ACCESS_TOKEN
                     , PER_PAGE
                     , pageNumber
-                    , type);
+                    , type)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(this::handleResponse,this::handleError));
 
-            call.enqueue(new Callback<ArrayList<PhotoModel>>() {
-                @Override
-                public void onResponse(Call<ArrayList<PhotoModel>> call, retrofit2.Response<ArrayList<PhotoModel>> response) {
-                    if (response.body() != null) {
-
-                        if (pageNumber != 1) {
-                            photoAdapter.AddPhotoArray(response.body());
-                        } else {
-                            photoAdapter.setPhotoModelArrayList(response.body());
-                        }
-                        ProgressD();
-
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ArrayList<PhotoModel>> call, Throwable t) {
-                    Timber.e("on failure ws call: \n" + t.getMessage());
-                    ProgressD();
-                }
-            });
         }
     }
+
+    private void handleResponse(ArrayList<PhotoModel> photoModels) {
+        if (photoModels != null) {
+            if (page != 1) {
+                photoAdapter.AddPhotoArray(photoModels);
+            } else {
+                photoAdapter.setPhotoModelArrayList(photoModels);
+            }
+            ProgressD();
+
+        }
+
+
+    }
+
+
+
+    private void handleError(Throwable error) {
+        Timber.e("on failure ws call: \n" + error.getMessage());
+        ProgressD();
+    }
+
+
+
 
 
     @Override
     public void onClick(View v) {
         ProgressD();
+        page = 1 ;
         switch (v.getId()) {
             case R.id.rb_tab_popular:
-                getPhotos(mContext.getString(R.string.popular), 1);
+                getPhotos(mContext.getString(R.string.popular), page);
                 break;
             case R.id.rb_tab_latest:
-                getPhotos(mContext.getString(R.string.latest), 1);
+                getPhotos(mContext.getString(R.string.latest), page);
                 break;
             case R.id.rb_tab_oldest:
-                getPhotos(mContext.getString(R.string.oldest), 1);
+                getPhotos(mContext.getString(R.string.oldest), page);
                 break;
         }
 
@@ -154,4 +170,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mCompositeDisposable.clear();
+    }
 }
