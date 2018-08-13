@@ -1,5 +1,6 @@
 package app.hb.unsplashwallpaper.activities;
 
+import android.app.ProgressDialog;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,21 +26,21 @@ import app.hb.unsplashwallpaper.utils.Constants;
 public class DetailsPhotoActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ActivityDetailsPhotosBinding detailsPhotosBinding;
-    private PhotoModel photoModel;
-    private Context mContext ;
+    private Context mContext;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         detailsPhotosBinding = DataBindingUtil.setContentView(this, R.layout.activity_details_photos);
+        mContext = DetailsPhotoActivity.this;
 
-        mContext=  getApplicationContext();
         detailsPhotosBinding.fabChangeWallpaper.setOnClickListener(this);
+        initViews();
+    }
 
-
-        photoModel = (PhotoModel) getIntent().getSerializableExtra(Constants.PARAM_PHOTOS);
-
+    private void initViews() {
+        PhotoModel photoModel = (PhotoModel) getIntent().getSerializableExtra(Constants.PARAM_PHOTOS);
         if (photoModel != null) {
             Glide.with(getApplicationContext())
                     .applyDefaultRequestOptions(new RequestOptions()
@@ -49,7 +50,7 @@ public class DetailsPhotoActivity extends AppCompatActivity implements View.OnCl
                     .load(photoModel.getUrls().getRegular())
                     .into(detailsPhotosBinding.imgFullImage);
         }
-
+        detailsPhotosBinding.progressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -75,6 +76,8 @@ public class DetailsPhotoActivity extends AppCompatActivity implements View.OnCl
         }
 
         Toast.makeText(this, mContext.getString(R.string.success_message), Toast.LENGTH_SHORT).show();
+        detailsPhotosBinding.progressBar.setVisibility(View.GONE);
+
     }
 
 
@@ -85,13 +88,15 @@ public class DetailsPhotoActivity extends AppCompatActivity implements View.OnCl
                 .setPositiveButton(mContext.getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        detailsPhotosBinding.progressBar.setVisibility(View.VISIBLE);
                         SetWallpaper();
                     }
                 })
                 .setNegativeButton(mContext.getString(R.string.no), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
+                        dialog.dismiss();
                     }
                 });
 

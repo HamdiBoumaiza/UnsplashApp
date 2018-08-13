@@ -19,7 +19,7 @@ public class PhotoModel implements Serializable {
     private String description;
 
     @SerializedName("urls")
-    private URLS urls;
+    private Urls urls;
 
     public PhotoModel() {
     }
@@ -36,44 +36,9 @@ public class PhotoModel implements Serializable {
         return description;
     }
 
-    public URLS getUrls() {
+    public Urls getUrls() {
         return urls;
     }
 
-    public class URLS implements Serializable{
-        @SerializedName("raw")
-        private String raw;
 
-        @SerializedName("full")
-        private String full;
-
-        @SerializedName("regular")
-        private String regular;
-
-        @SerializedName("small")
-        private String small;
-
-        @SerializedName("thumb")
-        private String thumb;
-
-        public String getRaw() {
-            return raw;
-        }
-
-        public String getFull() {
-            return full;
-        }
-
-        public String getRegular() {
-            return regular;
-        }
-
-        public String getSmall() {
-            return small;
-        }
-
-        public String getThumb() {
-            return thumb;
-        }
-    }
 }

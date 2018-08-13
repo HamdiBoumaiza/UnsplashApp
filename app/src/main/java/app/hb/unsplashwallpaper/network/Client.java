@@ -9,6 +9,7 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import java.util.concurrent.TimeUnit;
 
 import app.hb.unsplashwallpaper.BuildConfig;
+import app.hb.unsplashwallpaper.utils.Constants;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -16,8 +17,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class Client {
-    private static final String API_URL = "https://api.unsplash.com/";
-
     private static Client instance = null;
     private Retrofit mRetrofitClient;
     private OkHttpClient mOkHttpClient;
@@ -44,7 +43,7 @@ public class Client {
                 .setLenient()
                 .create();
 
-        mRetrofitClient = new Retrofit.Builder().baseUrl(API_URL)
+        mRetrofitClient = new Retrofit.Builder().baseUrl(Constants.API_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(mOkHttpClient)

@@ -26,21 +26,26 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
     private ArrayList<PhotoModel> photoModelArrayList;
     private ItemPhotosBinding viewDataBinding;
     private Context mContext;
+    private AdapterListener adapterListener;
 
-    public PhotoAdapter(Context mContext, ArrayList<PhotoModel> mListoptions) {
+    public PhotoAdapter(Context mContext, ArrayList<PhotoModel> mListoptions, AdapterListener adapterListener) {
         this.photoModelArrayList = mListoptions;
         this.mContext = mContext;
+        this.adapterListener = adapterListener;
 
     }
 
+    public ArrayList<PhotoModel> getPhotoModelArrayList() {
+        return photoModelArrayList;
+    }
 
     public void setPhotoModelArrayList(ArrayList<PhotoModel> photoModelArrayList) {
         this.photoModelArrayList = photoModelArrayList;
         notifyDataSetChanged();
     }
 
-    public void AddPhotoArray(ArrayList<PhotoModel> photoModelArray){
-        if (photoModelArray!=null) {
+    public void AddPhotoArray(ArrayList<PhotoModel> photoModelArray) {
+        if (photoModelArray != null) {
             photoModelArrayList.addAll(photoModelArray);
             notifyDataSetChanged();
         }
@@ -70,8 +75,22 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
         return photoModelArrayList == null ? 0 : photoModelArrayList.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+
+    public interface AdapterListener {
+        void itemClickListener(int position);
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ViewHolder(ItemPhotosBinding itemView) {
             super(itemView.getRoot());
             this.setIsRecyclable(false);
@@ -80,10 +99,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
 
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(mContext, DetailsPhotoActivity.class);
-            intent.putExtra(Constants.PARAM_PHOTOS, photoModelArrayList.get(getAdapterPosition()));
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startActivity(intent);
+            adapterListener.itemClickListener(getAdapterPosition());
         }
     }
 
